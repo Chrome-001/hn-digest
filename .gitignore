@@ -1,0 +1,4 @@
+node_modules/
+digest/
+latest.md
+.env

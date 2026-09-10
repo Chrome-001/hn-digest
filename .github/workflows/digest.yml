@@ -1,0 +1,35 @@
+name: daily-digest
+
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build digest and publish
+        run: npm run digest
+        env:
+          HN_TOP_LIMIT: "30"
+          HN_MIN_SCORE: "50"
+          OUTPUT_DIR: digest
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_OWNER: ${{ github.repository_owner }}
+          GH_REPO: ${{ github.event.repository.name }}
+          GIT_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_NAME: ${{ github.actor }}
